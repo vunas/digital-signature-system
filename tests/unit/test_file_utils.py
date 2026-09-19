@@ -33,6 +33,7 @@ class TestFileUtils:
 
     def test_get_file_content_local_reads_bytes(self, monkeypatch):
         # Arrange
+        monkeypatch.setattr("os.path.exists", lambda *args, **kwargs: True)
         monkeypatch.setattr("builtins.open", lambda *args, **kwargs: io.BytesIO(b"abc"))
 
         # Act
