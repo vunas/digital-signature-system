@@ -14,7 +14,9 @@ def encrypt_private_key(private_key_bytes: bytes) -> bytes:
 
 
 def decrypt_private_key(encrypted_private_key: bytes) -> bytes:
-    """
-    Giải mã Private Key từ Database để sử dụng cho quá trình ký PDF.
-    """
+    if isinstance(encrypted_private_key, memoryview):
+        encrypted_private_key = encrypted_private_key.tobytes()
+    elif isinstance(encrypted_private_key, str):
+        encrypted_private_key = encrypted_private_key.strip().encode("utf-8")
+
     return cipher_suite.decrypt(encrypted_private_key)

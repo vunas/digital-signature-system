@@ -5,8 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.utils.file_utils import save_file
 from app.repositories.document_repo import document_repo
-
-# Centralized Enums
 from app.models.enums import TargetResourceType
 from app.services.log_service import log_service
 
@@ -14,6 +12,7 @@ from app.services.log_service import log_service
 class FileService:
     async def upload_document(self, db: AsyncSession, user_id: int, file: UploadFile):
         content = await file.read()
+
         safe_filename = f"{uuid.uuid4().hex[:8]}_{file.filename}"
 
         file_size = len(content)

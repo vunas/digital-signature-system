@@ -10,7 +10,7 @@ from app.services.file_service import file_service
 from app.repositories.document_repo import document_repo
 from app.utils.file_utils import get_file_content
 
-router = APIRouter(prefix="/documents", tags=["Documents"])
+router = APIRouter(prefix="/api/documents", tags=["Documents"])
 
 
 @router.post("/upload", response_model=DocumentResponse)

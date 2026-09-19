@@ -7,7 +7,7 @@ from app.core.config import settings
 import logging
 
 BUCKET_NAME = "documents"
-USE_SUPABASE = bool(settings.SUPABASE_URL and settings.SUPABASE_KEY)
+USE_SUPABASE = False
 logging.info("Supabase: " + str(USE_SUPABASE))
 supabase: Client = None
 
@@ -28,9 +28,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(SIGNED_DIR, exist_ok=True)
 
 
-async def save_file(
-    content: bytes, filename: str, content_type: str = "application/pdf"
-) -> str:
+async def save_file(content: bytes, filename: str, content_type: str = "application/pdf") -> str:
     """
     Tự động quyết định lưu file lên Supabase hay lưu xuống Ổ cứng Local.
     """
@@ -44,9 +42,7 @@ async def save_file(
             )
             return cloud_path  # Trả về đường dẫn Cloud
         except Exception as e:
-            logging.error(
-                f"Supabase Upload lỗi: {e}. Fallback lưu file '{filename}' xuống Local."
-            )
+            logging.error(f"Supabase Upload lỗi: {e}. Fallback lưu file '{filename}' xuống Local.")
             # Chuyển tiếp xuống luồng ghi Local bên dưới
 
     # Luồng Local Storage (Chạy khi ko có cấu hình Supabase hoặc Upload Supabase thất bại)
@@ -77,29 +73,38 @@ def get_signed_file_path(original_file_name: str, original_db_path: str) -> str:
 def get_file_content(db_path: str) -> bytes:
     """
     Hàm tiện ích kéo nội dung file (Bytes) từ Local hoặc Cloud.
-    Sử dụng trong Router Download và Sign_Service.
     """
-    if db_path.startswith("local:"):
-        real_path = db_path.replace("local:", "")
+    # Nhận diện Local: có tiền tố 'local:', tồn tại trên đĩa, hoặc là đường dẫn tuyệt đối (có dấu ':' ở ký tự thứ 2)
+    is_local = (
+        db_path.startswith("local:")
+        or os.path.isabs(db_path)
+        or (len(db_path) > 1 and db_path[1] == ":")
+        or os.path.exists(db_path)
+    )
+
+    if is_local:
+        real_path = db_path.replace("local:", "", 1)
+        if not os.path.exists(real_path):
+            raise FileNotFoundError(f"Không tìm thấy file trên ổ đĩa: {real_path}")
         with open(real_path, "rb") as f:
             return f.read()
     else:
         if USE_SUPABASE:
             return supabase.storage.from_(BUCKET_NAME).download(db_path)
         else:
-            raise Exception(
-                "Hệ thống mất kết nối Supabase, không thể tải file trên Cloud."
-            )
+            raise Exception("Hệ thống mất kết nối Supabase, không thể tải file trên Cloud.")
 
 
-def save_signed_file_content(
-    db_path: str, content: bytes, content_type: str = "application/pdf"
-):
-    """
-    Hàm đẩy nội dung file đã ký lên Cloud hoặc lưu đè xuống Local
-    """
-    if db_path.startswith("local:"):
-        real_path = db_path.replace("local:", "")
+def save_signed_file_content(db_path: str, content: bytes, content_type: str = "application/pdf"):
+    is_local = (
+        db_path.startswith("local:")
+        or os.path.isabs(db_path)
+        or (len(db_path) > 1 and db_path[1] == ":")
+    )
+
+    if is_local:
+        real_path = db_path.replace("local:", "", 1)
+        os.makedirs(os.path.dirname(real_path), exist_ok=True)
         with open(real_path, "wb") as f:
             f.write(content)
     else:
@@ -108,6 +113,4 @@ def save_signed_file_content(
                 path=db_path, file=content, file_options={"content-type": content_type}
             )
         else:
-            raise Exception(
-                "Hệ thống mất kết nối Supabase, không thể upload file ký lên Cloud."
-            )
+            raise Exception("Hệ thống mất kết nối Supabase, không thể upload file ký lên Cloud.")
