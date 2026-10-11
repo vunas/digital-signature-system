@@ -1,85 +1,44 @@
-# =========================
-# Python
-# =========================
+.nx/cache
+.nx/workspace-data
+
+node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.next/
+out/
+build/
+dist/
+
+.venv/
+venv/
+env/
+
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
 *.so
 
-# Virtual environment
-venv/
-.env/
-.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 
-# =========================
-# Environment variables
-# =========================
 .env
 .env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
 
-# =========================
-# Logs
-# =========================
-*.log
-
-# =========================
-# Database
-# =========================
-*.db
-*.sqlite3
-
-# =========================
-# PostgreSQL dumps 
-# =========================
-*.sql
-
-# =========================
-# Upload files 
-# =========================
-uploads/
-app/uploads/
-signed/
-app/signed/
-
-# =========================
-# Static build (nếu có)
-# =========================
-staticfiles/
-dist/
-build/
-
-# =========================
-# IDE / Editor
-# =========================
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# =========================
-# OS files
-# =========================
 .DS_Store
 Thumbs.db
-
-# =========================
-# Cache / Test
-# =========================
-.pytest_cache/
-.mypy_cache/
-coverage/
-
-# =========================
-# Secrets 
-# =========================
-secrets.json
-config.json
-
-# =========================
-# Node (nếu có frontend)
-# =========================
-node_modules/
-
-.coverage
-
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
