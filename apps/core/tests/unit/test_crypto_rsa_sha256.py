@@ -42,9 +42,7 @@ def test_digital_signature_verification_rsa_sha256_roundtrip():
     message = b"payload-to-sign"
     signature = priv.sign(
         message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
-        ),
+        padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
         hashes.SHA256(),
     )
 
@@ -52,8 +50,6 @@ def test_digital_signature_verification_rsa_sha256_roundtrip():
     pub.verify(
         signature,
         message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
-        ),
+        padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
         hashes.SHA256(),
     )

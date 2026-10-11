@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-from datetime import datetime,timedelta, UTC
+from datetime import datetime, timedelta, UTC
 from typing import Optional
 import jwt
 from app.core.config import settings
@@ -23,9 +23,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.now(UTC) + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update({"exp": expire})
     # PyJWT encode trả về string luôn

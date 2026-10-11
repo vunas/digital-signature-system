@@ -6,7 +6,6 @@ from app.repositories.document_repo import DocumentRepository
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.fixture()
 def document_repo_instance():
     return DocumentRepository()
@@ -53,8 +52,10 @@ class TestDocumentRepository:
         db = SimpleNamespace(
             execute=lambda stmt: None,
         )
+
         async def _execute(stmt):
             return SimpleNamespace(scalar_one_or_none=lambda: None)
+
         db.execute = _execute
 
         # Act
@@ -67,9 +68,7 @@ class TestDocumentRepository:
         self, document_repo_instance
     ):
         # Arrange
-        db_obj = SimpleNamespace(
-            status=None, signed_file_path=None, signed_file_hash=None
-        )
+        db_obj = SimpleNamespace(status=None, signed_file_path=None, signed_file_hash=None)
         calls = {"flush": 0}
 
         class DummyDB:

@@ -6,7 +6,8 @@ from typing import AsyncGenerator
 
 from app.db.session import AsyncSessionLocal
 from app.core.config import settings
-from app.models.user import User  
+from app.models.user import User
+
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:

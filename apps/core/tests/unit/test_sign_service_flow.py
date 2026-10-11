@@ -7,7 +7,6 @@ from app.services.sign_service import SignService
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.fixture()
 def sign_service():
     return SignService()
@@ -68,13 +67,9 @@ class TestSignServiceFlow:
         with pytest.raises(ValueError, match="Không tìm thấy dữ liệu chứng chỉ"):
             sign_service._load_certificate(cert_record)
 
-    async def test_setup_timestamper_unreachable_tsa_returns_none(
-        self, sign_service, monkeypatch
-    ):
+    async def test_setup_timestamper_unreachable_tsa_returns_none(self, sign_service, monkeypatch):
         # Arrange
-        monkeypatch.setattr(
-            "app.services.sign_service.os.getenv", lambda key: "http://tsa"
-        )
+        monkeypatch.setattr("app.services.sign_service.os.getenv", lambda key: "http://tsa")
         monkeypatch.setattr(
             "app.services.sign_service.requests.get",
             lambda *args, **kwargs: (_ for _ in ()).throw(Exception("down")),
@@ -90,16 +85,12 @@ class TestSignServiceFlow:
         self, sign_service, monkeypatch
     ):
         # Arrange
-        monkeypatch.setattr(
-            "app.services.sign_service.os.getenv", lambda key: "http://tsa"
-        )
+        monkeypatch.setattr("app.services.sign_service.os.getenv", lambda key: "http://tsa")
         monkeypatch.setattr(
             "app.services.sign_service.requests.get", lambda *args, **kwargs: object()
         )
         marker = object()
-        monkeypatch.setattr(
-            "app.services.sign_service.HTTPTimeStamper", lambda url: marker
-        )
+        monkeypatch.setattr("app.services.sign_service.HTTPTimeStamper", lambda url: marker)
 
         # Act
         timestamper = sign_service._setup_timestamper()
@@ -122,9 +113,7 @@ class TestSignServiceFlow:
             lambda b: (None, None, b"DER"),
         )
         cert_obj = object()
-        monkeypatch.setattr(
-            "app.services.sign_service.x509.Certificate.load", lambda b: cert_obj
-        )
+        monkeypatch.setattr("app.services.sign_service.x509.Certificate.load", lambda b: cert_obj)
 
         class DummyStore:
             def __init__(self):
@@ -133,9 +122,7 @@ class TestSignServiceFlow:
             def register(self, cert):
                 self.registered = cert
 
-        monkeypatch.setattr(
-            "app.services.sign_service.SimpleCertificateStore", DummyStore
-        )
+        monkeypatch.setattr("app.services.sign_service.SimpleCertificateStore", DummyStore)
 
         # Act
         registry = await sign_service._build_certificate_registry(db=object())
@@ -167,30 +154,25 @@ class TestSignServiceFlow:
             "app.services.sign_service.get_signed_file_path",
             lambda file_name, input_path: "local:/signed.pdf",
         )
-        monkeypatch.setattr(
-            sign_service, "_load_private_key", lambda *args, **kwargs: object()
-        )
-        monkeypatch.setattr(
-            sign_service, "_load_certificate", lambda *args, **kwargs: object()
-        )
+        monkeypatch.setattr(sign_service, "_load_private_key", lambda *args, **kwargs: object())
+        monkeypatch.setattr(sign_service, "_load_certificate", lambda *args, **kwargs: object())
         monkeypatch.setattr(
             sign_service,
             "_build_certificate_registry",
             AsyncMock(return_value=object()),
         )
         monkeypatch.setattr(sign_service, "_setup_timestamper", lambda: None)
-        monkeypatch.setattr(
-            sign_service, "_execute_pdf_signing", lambda *args, **kwargs: None
-        )
+        monkeypatch.setattr(sign_service, "_execute_pdf_signing", lambda *args, **kwargs: None)
 
         captured = {"create": 0, "update": 0}
 
         monkeypatch.setattr(
             "app.services.sign_service.signature_repo.create",
-            AsyncMock(side_effect=lambda **kwargs: (
-                captured.__setitem__("create", captured["create"] + 1)
-                or signature_record
-            )),
+            AsyncMock(
+                side_effect=lambda **kwargs: (
+                    captured.__setitem__("create", captured["create"] + 1) or signature_record
+                )
+            ),
         )
         monkeypatch.setattr("app.services.sign_service.log_service.log_action", AsyncMock())
 

@@ -8,23 +8,24 @@ from app.core.dependencies import get_current_user
 pytestmark = pytest.mark.asyncio
 
 
-
 class TestRouterSecurityAndValidation:
     async def test_sign_route_without_auth_returns_401(self, client_full, monkeypatch):
         # Arrange
         monkeypatch.setattr(
             "app.routers.signature_router.sign_service.sign_pdf",
-            AsyncMock(return_value=SimpleNamespace(
-                id=1,
-                document_id=1,
-                user_id=1,
-                hash_algorithm="SHA-256",
-                signature_algorithm="RSA",
-                signer_name="n",
-                signer_reason="r",
-                signer_location="l",
-                created_at="2026-01-01T00:00:00Z",
-            )),
+            AsyncMock(
+                return_value=SimpleNamespace(
+                    id=1,
+                    document_id=1,
+                    user_id=1,
+                    hash_algorithm="SHA-256",
+                    signature_algorithm="RSA",
+                    signer_name="n",
+                    signer_reason="r",
+                    signer_location="l",
+                    created_at="2026-01-01T00:00:00Z",
+                )
+            ),
         )
         payload = {"document_id": 1, "key_id": 2, "signer_name": "Alice"}
 

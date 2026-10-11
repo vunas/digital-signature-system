@@ -4,6 +4,7 @@ import pytest
 
 pytestmark = pytest.mark.asyncio
 
+
 class TestAuthRouterAdditional:
     async def test_refresh_without_cookie_returns_401(self, client_full):
         # Arrange / Act
@@ -22,9 +23,7 @@ class TestAuthRouterAdditional:
         )
 
         # Act
-        res = await client_full.post(
-            "/auth/refresh", cookies={"refresh_token": "refresh-token"}
-        )
+        res = await client_full.post("/auth/refresh", cookies={"refresh_token": "refresh-token"})
 
         # Assert
         assert res.status_code == 200

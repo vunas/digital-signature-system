@@ -9,7 +9,6 @@ from app.services.key_service import KeyService
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.mark.unit
 async def test_key_service_create_key_fingerprint_sha256_first_16_upper_hex(monkeypatch):
     """
@@ -22,12 +21,14 @@ async def test_key_service_create_key_fingerprint_sha256_first_16_upper_hex(monk
     def fake_encrypt_key(data: bytes) -> bytes:
         return b"ENCRYPTED(" + data[:8] + b")"
 
-    monkeypatch.setattr(
-        "app.services.key_service.aes_service.encrypt_key", fake_encrypt_key
-    )
+    monkeypatch.setattr("app.services.key_service.aes_service.encrypt_key", fake_encrypt_key)
     monkeypatch.setattr(
         "app.services.key_service.key_repo.create",
-        AsyncMock(side_effect=lambda db, **kwargs: captured.update(kwargs) or SimpleNamespace(**kwargs, id=123, created_at=None)),
+        AsyncMock(
+            side_effect=lambda db, **kwargs: (
+                captured.update(kwargs) or SimpleNamespace(**kwargs, id=123, created_at=None)
+            )
+        ),
     )
     monkeypatch.setattr("app.services.key_service.log_service.log_action", AsyncMock())
 

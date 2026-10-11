@@ -7,7 +7,6 @@ from app.services.certificate_service import CertificateService
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.fixture()
 def cert_service():
     return CertificateService()
@@ -29,16 +28,16 @@ class TestCertificateServiceFlow:
         assert tsa_cert is None
         assert tsa_key is None
 
-    async def test_get_internal_tsa_found_returns_cert_and_key(
-        self, cert_service, monkeypatch
-    ):
+    async def test_get_internal_tsa_found_returns_cert_and_key(self, cert_service, monkeypatch):
         # Arrange
         tsa_cert = SimpleNamespace(key_id=11, user_id=2)
         tsa_key = SimpleNamespace(id=11)
 
         db = SimpleNamespace(
             execute=AsyncMock(
-                return_value=SimpleNamespace(scalars=lambda: SimpleNamespace(first=lambda: tsa_cert))
+                return_value=SimpleNamespace(
+                    scalars=lambda: SimpleNamespace(first=lambda: tsa_cert)
+                )
             )
         )
         monkeypatch.setattr(
@@ -71,9 +70,7 @@ class TestCertificateServiceFlow:
             "app.services.certificate_service.key_repo.get_by_id",
             AsyncMock(return_value=key_record),
         )
-        monkeypatch.setattr(
-            cert_service, "_get_private_key", lambda key_record: object()
-        )
+        monkeypatch.setattr(cert_service, "_get_private_key", lambda key_record: object())
         monkeypatch.setattr(
             "app.services.certificate_service.load_pem_public_key",
             lambda key_bytes: object(),

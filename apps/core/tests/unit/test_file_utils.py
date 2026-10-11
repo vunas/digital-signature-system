@@ -16,9 +16,7 @@ class TestFileUtils:
                 (),
                 {
                     "now": staticmethod(
-                        lambda: type(
-                            "T", (), {"strftime": lambda self, f: "20260101_000000"}
-                        )()
+                        lambda: type("T", (), {"strftime": lambda self, f: "20260101_000000"})()
                     )
                 },
             ),

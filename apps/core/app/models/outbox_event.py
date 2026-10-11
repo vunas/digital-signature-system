@@ -10,7 +10,7 @@ from app.models.enums import OutboxStatus
 
 class OutboxEvent(Base):
     __tablename__ = "outbox_events"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     aggregate_type: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     aggregate_id: Mapped[str] = mapped_column(String(100), nullable=False, index=True)

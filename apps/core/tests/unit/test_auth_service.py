@@ -7,7 +7,6 @@ from app.services.auth_service import AuthService
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.fixture()
 def auth_service():
     return AuthService()

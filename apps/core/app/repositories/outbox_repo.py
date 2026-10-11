@@ -13,7 +13,7 @@ class OutboxRepository:
             aggregate_id=obj_in.aggregate_id,
             event_type=obj_in.event_type,
             payload=obj_in.payload,
-            status=OutboxStatus.PENDING
+            status=OutboxStatus.PENDING,
         )
         db.add(db_obj)
         await db.flush()

@@ -5,13 +5,10 @@ from app.models.user import User
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.mark.integration
 async def test_login_sets_http_only_cookies(client_full, db_session):
     # Validates: /auth/login authenticates and sets access/refresh cookies.
-    u = User(
-        username="alice", password_hash=get_password_hash("secret"), is_active=True
-    )
+    u = User(username="alice", password_hash=get_password_hash("secret"), is_active=True)
     db_session.add(u)
     await db_session.commit()
 

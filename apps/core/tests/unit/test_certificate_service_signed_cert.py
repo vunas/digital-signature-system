@@ -7,11 +7,8 @@ from app.services.certificate_service import CertificateService
 pytestmark = pytest.mark.asyncio
 
 
-
 class TestCertificateServiceSignedCert:
-    async def test_create_signed_cert_intermediate_success_calls_repo_create(
-        self, monkeypatch
-    ):
+    async def test_create_signed_cert_intermediate_success_calls_repo_create(self, monkeypatch):
         # Arrange
         service = CertificateService()
         cert_data = SimpleNamespace(
@@ -32,9 +29,11 @@ class TestCertificateServiceSignedCert:
 
         monkeypatch.setattr(
             "app.services.certificate_service.key_repo.get_by_id",
-            AsyncMock(side_effect=lambda db, key_id, user_id: (
-                user_key_record if key_id == 2 else issuer_key_record
-            )),
+            AsyncMock(
+                side_effect=lambda db, key_id, user_id: (
+                    user_key_record if key_id == 2 else issuer_key_record
+                )
+            ),
         )
         monkeypatch.setattr(
             "app.services.certificate_service.load_pem_public_key",
@@ -91,7 +90,9 @@ class TestCertificateServiceSignedCert:
         created = {}
         monkeypatch.setattr(
             "app.services.certificate_service.certificate_repo.create",
-            AsyncMock(side_effect=lambda **kwargs: created.update(kwargs) or SimpleNamespace(id=55)),
+            AsyncMock(
+                side_effect=lambda **kwargs: created.update(kwargs) or SimpleNamespace(id=55)
+            ),
         )
         monkeypatch.setattr("app.services.certificate_service.log_service.log_action", AsyncMock())
 

@@ -1,9 +1,7 @@
 from fastapi.responses import JSONResponse
 
 
-def success_response(
-    data: dict = None, message: str = "Thành công", status_code: int = 200
-):
+def success_response(data: dict = None, message: str = "Thành công", status_code: int = 200):
     """Chuẩn hóa cấu trúc trả về của API thành công."""
     return JSONResponse(
         status_code=status_code,

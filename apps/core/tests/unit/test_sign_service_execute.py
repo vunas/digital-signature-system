@@ -15,9 +15,7 @@ def sign_data():
 
 
 class TestSignServiceExecute:
-    def test_execute_pdf_signing_tsa_error_fallback_without_tsa(
-        self, monkeypatch, sign_data
-    ):
+    def test_execute_pdf_signing_tsa_error_fallback_without_tsa(self, monkeypatch, sign_data):
         # Arrange
         service = SignService()
 

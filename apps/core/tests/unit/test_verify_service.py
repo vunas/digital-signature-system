@@ -8,7 +8,6 @@ from app.services.verify_service import VerifyService
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.mark.unit
 async def test_verify_pdf_signature_missing_file_raises(monkeypatch):
     # Validates: hard failure when file path doesn't exist.
@@ -18,7 +17,9 @@ async def test_verify_pdf_signature_missing_file_raises(monkeypatch):
 
     monkeypatch.setattr(vs_mod.os.path, "exists", lambda p: False)
     monkeypatch.setattr("app.services.verify_service.log_service.log_action", AsyncMock())
-    monkeypatch.setattr("app.services.verify_service.verify_log_service.create_verify_log", AsyncMock())
+    monkeypatch.setattr(
+        "app.services.verify_service.verify_log_service.create_verify_log", AsyncMock()
+    )
     with pytest.raises(FileNotFoundError):
         await svc.verify_pdf_signature(db=None, file_path="does-not-exist.pdf")
 
@@ -31,7 +32,9 @@ async def test_verify_pdf_signature_empty_file_returns_message(monkeypatch):
     monkeypatch.setattr("app.services.verify_service.os.path.exists", lambda p: True)
     monkeypatch.setattr("app.services.verify_service.os.path.getsize", lambda p: 0)
     monkeypatch.setattr("app.services.verify_service.log_service.log_action", AsyncMock())
-    monkeypatch.setattr("app.services.verify_service.verify_log_service.create_verify_log", AsyncMock())
+    monkeypatch.setattr(
+        "app.services.verify_service.verify_log_service.create_verify_log", AsyncMock()
+    )
 
     res = await svc.verify_pdf_signature(db=None, file_path="x.pdf")
     assert res["is_valid"] is False
@@ -45,7 +48,9 @@ async def test_verify_pdf_signature_no_root_ca_returns_message(monkeypatch):
 
     monkeypatch.setattr("app.services.verify_service.os.path.exists", lambda p: True)
     monkeypatch.setattr("app.services.verify_service.os.path.getsize", lambda p: 10)
-    monkeypatch.setattr("app.services.verify_service.verify_log_service.create_verify_log", AsyncMock())
+    monkeypatch.setattr(
+        "app.services.verify_service.verify_log_service.create_verify_log", AsyncMock()
+    )
 
     class DummyQuery:
         def filter(self, *args, **kwargs):
@@ -56,6 +61,7 @@ async def test_verify_pdf_signature_no_root_ca_returns_message(monkeypatch):
 
     async def _execute(stmt):
         return SimpleNamespace(scalars=lambda: SimpleNamespace(all=lambda: []))
+
     db = SimpleNamespace(execute=_execute)
 
     # Avoid touching filesystem; VerifyService won't open when roots are missing.
@@ -72,7 +78,9 @@ async def test_verify_pdf_signature_invalid_signature_result(monkeypatch):
     monkeypatch.setattr("app.services.verify_service.os.path.exists", lambda p: True)
     monkeypatch.setattr("app.services.verify_service.os.path.getsize", lambda p: 10)
     monkeypatch.setattr("app.services.verify_service.log_service.log_action", AsyncMock())
-    monkeypatch.setattr("app.services.verify_service.verify_log_service.create_verify_log", AsyncMock())
+    monkeypatch.setattr(
+        "app.services.verify_service.verify_log_service.create_verify_log", AsyncMock()
+    )
 
     root_record = SimpleNamespace(certificate_data=b"DERROOT")
 
@@ -97,6 +105,7 @@ async def test_verify_pdf_signature_invalid_signature_result(monkeypatch):
         calls["n"] += 1
         rows = [root_record] if calls["n"] == 1 else []
         return SimpleNamespace(scalars=lambda: SimpleNamespace(all=lambda: rows))
+
     db = SimpleNamespace(execute=_execute)
 
     # Mock cert loading and validation context to avoid asn1crypto internals.

@@ -18,9 +18,7 @@ def test_get_private_key_local_requires_raw_private_key():
 def test_get_private_key_server_passphrase_wrong_raises_value_error(monkeypatch):
     # Validates: wrong passphrase becomes a friendly ValueError.
     svc = CertificateService()
-    key_record = SimpleNamespace(
-        storage_type="server", private_key_encrypted=b"ENCRYPTED"
-    )
+    key_record = SimpleNamespace(storage_type="server", private_key_encrypted=b"ENCRYPTED")
 
     def fake_load_pem_private_key(data, password):
         raise Exception("bad decrypt")

@@ -40,4 +40,3 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             # Bắt lỗi nghiêm trọng (500 Internal Server Error)
             logger.error(f"❌ ERROR: {method} {url} - Exception: {str(e)}")
             raise e
-

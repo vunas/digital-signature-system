@@ -23,6 +23,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 @pytest_asyncio.fixture()
 async def pg_engine() -> AsyncGenerator[AsyncEngine, None]:
     database_url = os.getenv(

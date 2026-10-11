@@ -9,8 +9,9 @@ from app.db.base import Base
 from app.models.enums import SignatureAlgo, HashAlgo
 
 if TYPE_CHECKING:
-     from app.models.document import Document
-     from app.models.timestamp import Timestamp
+    from app.models.document import Document
+    from app.models.timestamp import Timestamp
+
 
 class Signature(Base):
     __tablename__ = "signatures"

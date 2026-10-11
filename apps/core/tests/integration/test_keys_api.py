@@ -5,7 +5,6 @@ from app.models.user import User
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.mark.integration
 async def test_generate_key_endpoint_uses_dependency_overrides(
     client_full, db_session, override_current_user_full

@@ -8,7 +8,6 @@ from app.services.file_service import FileService
 pytestmark = pytest.mark.asyncio
 
 
-
 class DummyUploadFile:
     """
     Minimal UploadFile-like object for deterministic unit tests.
@@ -40,7 +39,11 @@ async def test_upload_document_hash_and_size_are_computed(monkeypatch):
     monkeypatch.setattr("app.services.file_service.save_file", fake_save_file)
     monkeypatch.setattr(
         "app.services.file_service.document_repo.create",
-        AsyncMock(side_effect=lambda db, **kwargs: created_db_record.update(kwargs) or SimpleNamespace(**kwargs, id=1)),
+        AsyncMock(
+            side_effect=lambda db, **kwargs: (
+                created_db_record.update(kwargs) or SimpleNamespace(**kwargs, id=1)
+            )
+        ),
     )
     monkeypatch.setattr("app.services.file_service.log_service.log_action", AsyncMock())
 
@@ -69,7 +72,11 @@ async def test_upload_document_empty_file_edge_case(monkeypatch):
     monkeypatch.setattr("app.services.file_service.save_file", fake_save_file)
     monkeypatch.setattr(
         "app.services.file_service.document_repo.create",
-        AsyncMock(side_effect=lambda db, **kwargs: created_db_record.update(kwargs) or SimpleNamespace(**kwargs, id=1)),
+        AsyncMock(
+            side_effect=lambda db, **kwargs: (
+                created_db_record.update(kwargs) or SimpleNamespace(**kwargs, id=1)
+            )
+        ),
     )
     monkeypatch.setattr("app.services.file_service.log_service.log_action", AsyncMock())
 

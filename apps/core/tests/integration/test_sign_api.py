@@ -24,9 +24,7 @@ async def test_sign_endpoint_returns_signature_response_shape(
             created_at="2026-01-01T00:00:00Z",
         )
 
-    monkeypatch.setattr(
-        "app.routers.signature_router.sign_service.sign_pdf", fake_sign_pdf
-    )
+    monkeypatch.setattr("app.routers.signature_router.sign_service.sign_pdf", fake_sign_pdf)
 
     payload = {
         "document_id": 1,

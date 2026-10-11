@@ -101,7 +101,7 @@ class SignService:
         if not doc or not key_record or not cert_record:
             raise ValueError("Không tìm thấy tài liệu, khóa hoặc chứng thư số tương ứng.")
 
-        # Check tính hợp lệ của cert 
+        # Check tính hợp lệ của cert
         if not cert_record.is_valid_now():
             raise ValueError("Chứng chỉ không hợp lệ hoặc đã hết hạn.")
 

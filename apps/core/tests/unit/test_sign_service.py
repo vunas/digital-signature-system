@@ -7,7 +7,6 @@ from app.services.sign_service import SignService
 pytestmark = pytest.mark.asyncio
 
 
-
 @pytest.mark.unit
 async def test_sign_pdf_missing_records_raises_value_error(mock_sign_repos):
     """
@@ -74,9 +73,7 @@ async def test_sign_pdf_invalid_passphrase_maps_to_value_error(mock_sign_repos, 
         raise Exception("bad decrypt")
 
     # Vẫn cần monkeypatch riêng cho thư viện cryptography (chỉ có trong test này)
-    monkeypatch.setattr(
-        "app.services.sign_service.load_pem_private_key", fake_load_pem_private_key
-    )
+    monkeypatch.setattr("app.services.sign_service.load_pem_private_key", fake_load_pem_private_key)
 
     with pytest.raises(ValueError, match="Mật khẩu giải mã khóa"):
         await svc.sign_pdf(db=None, user_id=1, sign_data=sign_data)
