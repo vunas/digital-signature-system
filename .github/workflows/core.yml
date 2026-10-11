@@ -1,0 +1,58 @@
+name: Core CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "apps/core/**"
+      - ".github/workflows/core.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "apps/core/**"
+      - ".github/workflows/core.yml"
+
+jobs:
+  test-and-lint-core:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    defaults:
+      run:
+        working-directory: apps/core
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: sudo apt-get update && sudo apt-get install -y gcc libpq-dev
+      - run: uv sync --frozen
+      - name: Run Ruff Lint & Format Check
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Run Pytest
+        env:
+          DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test_db
+        run: uv run pytest --cov=app tests/
+      - name: Secret Scanning (TruffleHog)
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD

@@ -34,6 +34,9 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-digital_signature_db}}
     ports:
       - "${APP_PORT:-8000}:8000"
+    volumes:
+      - api_storage:/app/storage
 
 volumes:
   postgres_data:
+  api_storage:
