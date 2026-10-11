@@ -1,0 +1,4 @@
+2026-10-11 17:00:57 | INFO     | middleware:21 | 📥 Incoming: GET / - IP: testclient
+2026-10-11 17:00:57 | INFO     | middleware:31 | 📤 Outgoing: GET / - Status: 200 - Time: 38.65ms
+2026-10-11 17:00:57 | INFO     | middleware:21 | 📥 Incoming: GET /login - IP: testclient
+2026-10-11 17:00:57 | INFO     | middleware:31 | 📤 Outgoing: GET /login - Status: 200 - Time: 21.48ms

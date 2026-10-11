@@ -1,0 +1,29 @@
+{
+  "name": "securesign",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nx run-many -t test",
+    "dev:web": "nx serve web",
+    "dev:core": "nx serve core",
+    "dev": "nx run-many -t serve --parallel=2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.11.2",
+      "onFail": "download"
+    }
+  },
+  "type": "module",
+  "devDependencies": {
+    "@nx/js": "^23.3.0",
+    "@types/node": "^26.6.5",
+    "nx": "^23.3.0",
+    "typescript": "^7.0.2"
+  }
+}
