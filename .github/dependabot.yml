@@ -1,5 +1,23 @@
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Asia/Ho_Chi_Minh"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(deps-actions)"
+    groups:
+      actions-updates:
+        patterns:
+          - "*"
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -14,12 +32,9 @@ updates:
     commit-message:
       prefix: "chore(deps-web)"
     groups:
-      web-minor-and-patch:
+      web-dependencies:
         patterns:
           - "*"
-        update-types:
-          - "minor"
-          - "patch"
 
   - package-ecosystem: "pip"
     directory: "/apps/core"
@@ -35,9 +50,6 @@ updates:
     commit-message:
       prefix: "chore(deps-core)"
     groups:
-      core-minor-and-patch:
+      core-dependencies:
         patterns:
           - "*"
-        update-types:
-          - "minor"
-          - "patch"
