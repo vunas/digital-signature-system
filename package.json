@@ -1,6 +1,6 @@
 {
   "name": "securesign",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^11.10.0",
+      "version": "^12.11.2",
       "onFail": "download"
     }
   },
