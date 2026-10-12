@@ -18,10 +18,8 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     """Đăng ký tài khoản mới"""
     try:
         user = await auth_service.register_user(db, user_in=user_in)
-        await db.commit()  # Unit of Work: Chốt lưu User và AuditLog
         return user
     except ValueError as e:
-        await db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
 
@@ -36,9 +34,7 @@ async def login(
         user, access_token, refresh_token = await auth_service.authenticate_and_generate_tokens(
             db=db, username=form_data.username, password=form_data.password
         )
-        await db.commit()  # Chốt lưu Audit Log
     except ValueError as e:
-        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
@@ -77,7 +73,6 @@ async def refresh_token(request: Request, response: Response, db: AsyncSession =
         new_access_token = await auth_service.refresh_access_token(
             db, refresh_token_str=refresh_cookie
         )
-        await db.commit()
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
 

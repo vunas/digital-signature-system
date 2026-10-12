@@ -1,26 +1,27 @@
-import pytest
-from fastapi.testclient import TestClient
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 
 
-@pytest.fixture()
-def main_client():
-    with TestClient(app) as client:
+@pytest_asyncio.fixture()
+async def main_client():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         yield client
 
 
 class TestMainApp:
-    def test_root_route_returns_200(self, main_client):
+    async def test_root_route_returns_200(self, main_client):
         # Arrange / Act
-        response = main_client.get("/")
+        response = await main_client.get("/")
 
         # Assert
         assert response.status_code == 200
 
-    def test_login_page_route_returns_200(self, main_client):
+    async def test_login_page_route_returns_200(self, main_client):
         # Arrange / Act
-        response = main_client.get("/login")
+        response = await main_client.get("/login")
 
         # Assert
         assert response.status_code == 200

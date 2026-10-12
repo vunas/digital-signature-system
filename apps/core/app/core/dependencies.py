@@ -1,8 +1,9 @@
-from fastapi import Depends, HTTPException, status, Request
+from typing import Annotated, AsyncGenerator
+
+from fastapi import Cookie, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import jwt
-from typing import AsyncGenerator
 
 from app.db.session import AsyncSessionLocal
 from app.core.config import settings
@@ -10,30 +11,33 @@ from app.models.user import User
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-            # Tự động commit sau khi request xử lý xong mà không có lỗi
-            await session.commit()
-        except Exception:
-            # Tự động rollback nếu có lỗi trong service/router
-            await session.rollback()
-            raise
+    session = AsyncSessionLocal()
+    try:
+        yield session
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+    finally:
+        await session.close()
 
 
-async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)) -> User:
-    """Lấy thông tin User hiện tại từ HttpOnly Cookie (Access Token)"""
+DatabaseDep = Annotated[AsyncSession, Depends(get_db)]
+
+
+async def get_current_user(
+    db: DatabaseDep,
+    access_token: Annotated[str | None, Cookie()] = None,
+) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Không thể xác thực thông tin (Token không hợp lệ hoặc đã hết hạn)",
     )
 
-    token = request.cookies.get("access_token")
-    if not token:
+    if not access_token:
         raise credentials_exception
 
-    if token.startswith("Bearer "):
-        token = token.replace("Bearer ", "")
+    token = access_token.removeprefix("Bearer ")
 
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
@@ -51,3 +55,6 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
         raise credentials_exception
 
     return user
+
+
+CurrentUserDep = Annotated[User, Depends(get_current_user)]
