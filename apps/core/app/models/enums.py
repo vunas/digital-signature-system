@@ -50,9 +50,3 @@ class DocumentStatus(str, enum.Enum):
     SIGNED = "SIGNED"
     VERIFIED = "VERIFIED"
     INVALID = "INVALID"
-
-
-class OutboxStatus(str, enum.Enum):
-    PENDING = "PENDING"
-    PROCESSED = "PROCESSED"
-    FAILED = "FAILED"
