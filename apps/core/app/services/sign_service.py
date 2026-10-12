@@ -1,9 +1,9 @@
 import os
 import tempfile
-import requests
 import logging
 import asyncio
 import hashlib
+import httpx
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -48,7 +48,7 @@ class SignService:
         end_entity_cert = self._load_certificate(cert_record)
         cert_registry = await self._build_certificate_registry(db)
 
-        timestamper = self._setup_timestamper()
+        timestamper = await self._setup_timestamper()
 
         # Thực thi xử lý PDF nặng thông qua ThreadPool
         new_signed_hash = await asyncio.to_thread(
@@ -85,7 +85,6 @@ class SignService:
             payload={"document_id": doc.id, "signer_name": sign_data.signer_name},
         )
 
-        # Trả về object, db.commit() sẽ được gọi ở Router để lưu toàn bộ (bao gồm thay đổi của doc)
         return signature_record
 
     async def _get_and_validate_records(
@@ -169,14 +168,15 @@ class SignService:
                 cert_registry.register(inter_cert)
         return cert_registry
 
-    def _setup_timestamper(self):
+    async def _setup_timestamper(self):
         tsa_url = os.getenv("TSA_URL")
         if not tsa_url:
             return None
         try:
-            requests.get(tsa_url, timeout=2)
+            async with httpx.AsyncClient(timeout=2) as client:
+                await client.get(tsa_url)
             return HTTPTimeStamper(tsa_url)
-        except Exception as e:
+        except (httpx.TimeoutException, httpx.RequestError, ValueError) as e:
             logging.warning(f"External TSA không phản hồi: {e}")
             return None
 

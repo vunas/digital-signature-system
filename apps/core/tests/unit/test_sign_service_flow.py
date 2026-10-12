@@ -2,6 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+import httpx
 from app.services.sign_service import SignService
 
 pytestmark = pytest.mark.asyncio
@@ -70,13 +71,24 @@ class TestSignServiceFlow:
     async def test_setup_timestamper_unreachable_tsa_returns_none(self, sign_service, monkeypatch):
         # Arrange
         monkeypatch.setattr("app.services.sign_service.os.getenv", lambda key: "http://tsa")
+
+        class FailingClient:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *args):
+                return None
+
+            async def get(self, *args, **kwargs):
+                raise httpx.ConnectError("down")
+
         monkeypatch.setattr(
-            "app.services.sign_service.requests.get",
-            lambda *args, **kwargs: (_ for _ in ()).throw(Exception("down")),
+            "app.services.sign_service.httpx.AsyncClient",
+            lambda *args, **kwargs: FailingClient(),
         )
 
         # Act
-        timestamper = sign_service._setup_timestamper()
+        timestamper = await sign_service._setup_timestamper()
 
         # Assert
         assert timestamper is None
@@ -86,14 +98,26 @@ class TestSignServiceFlow:
     ):
         # Arrange
         monkeypatch.setattr("app.services.sign_service.os.getenv", lambda key: "http://tsa")
+
+        class WorkingClient:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *args):
+                return None
+
+            async def get(self, *args, **kwargs):
+                return object()
+
         monkeypatch.setattr(
-            "app.services.sign_service.requests.get", lambda *args, **kwargs: object()
+            "app.services.sign_service.httpx.AsyncClient",
+            lambda *args, **kwargs: WorkingClient(),
         )
         marker = object()
         monkeypatch.setattr("app.services.sign_service.HTTPTimeStamper", lambda url: marker)
 
         # Act
-        timestamper = sign_service._setup_timestamper()
+        timestamper = await sign_service._setup_timestamper()
 
         # Assert
         assert timestamper is marker
@@ -161,7 +185,7 @@ class TestSignServiceFlow:
             "_build_certificate_registry",
             AsyncMock(return_value=object()),
         )
-        monkeypatch.setattr(sign_service, "_setup_timestamper", lambda: None)
+        monkeypatch.setattr(sign_service, "_setup_timestamper", AsyncMock(return_value=None))
         monkeypatch.setattr(sign_service, "_execute_pdf_signing", lambda *args, **kwargs: None)
 
         captured = {"create": 0, "update": 0}
