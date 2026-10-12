@@ -25,10 +25,8 @@ async def upload_document(
 
     try:
         doc = await file_service.upload_document(db, current_user.id, file)
-        await db.commit()
         return doc
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=f"Lỗi upload: {str(e)}")
 
 

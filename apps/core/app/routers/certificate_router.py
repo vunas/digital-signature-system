@@ -26,10 +26,8 @@ async def create_certificate(
         cert = await certificate_service.create_signed_cert(
             db, current_user.id, cert_data, issuer_cert=issuer_cert
         )
-        await db.commit()
         return cert
     except ValueError as e:
-        await db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
 

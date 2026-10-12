@@ -335,7 +335,7 @@
   async function loadDocuments() {
     try {
       // Lấy danh sách văn bản dựa vào Endpoint GET /documents/ đã có
-      const userDocs = await fetchAPI("/documents/");
+      const userDocs = await fetchAPI("/api/documents/");
       const select = document.getElementById("existing-doc-select");
 
       select.innerHTML =
@@ -581,7 +581,7 @@
         const formUploadData = new FormData();
         formUploadData.append("file", selectedFileToUpload);
         const docData = await fetchAPI(
-          "/documents/upload",
+          "/api/documents/upload",
           "POST",
           formUploadData,
           true,
