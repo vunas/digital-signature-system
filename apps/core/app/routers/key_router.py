@@ -20,8 +20,6 @@ async def generate_new_key(
 
 
 @router.get("/", response_model=List[KeyResponse])
-async def get_my_keys(
-    db: DatabaseDep, current_user: CurrentUserDep
-):
+async def get_my_keys(db: DatabaseDep, current_user: CurrentUserDep):
     """Lấy danh sách các khóa của tôi."""
     return await key_repo.get_all_by_user(db, current_user.id)

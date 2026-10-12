@@ -5,9 +5,7 @@ from app.models.verify_log import VerifyLog
 
 
 class VerifyLogRepository:
-    async def get_by_user(
-        self, db: AsyncSession, user_id: int, limit: int = 50
-    ) -> list[VerifyLog]:
+    async def get_by_user(self, db: AsyncSession, user_id: int, limit: int = 50) -> list[VerifyLog]:
         result = await db.execute(
             select(VerifyLog)
             .filter(VerifyLog.verified_by_user_id == user_id)
