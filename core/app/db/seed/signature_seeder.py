@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.enums import CredentialStatus
 from app.models.signature import Signature
 from app.models.timestamp import Timestamp
 
@@ -13,8 +14,9 @@ async def seed_signatures(
     print("✍️ Đang tạo Signatures...")
 
     giamdoc = users["giamdoc"]
+    # Trạng thái mới của schema là ISSUED
     signed_credentials = [
-        credential for credential in docs if credential.status in ["SIGNED", "VERIFIED"]
+        credential for credential in docs if credential.status == CredentialStatus.ISSUED
     ]
     for credential in signed_credentials:
         signature = Signature(

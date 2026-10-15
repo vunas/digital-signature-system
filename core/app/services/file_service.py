@@ -19,11 +19,11 @@ class FileService:
         file: UploadFile,
         tenant_id: int | None = None,
     ):
-        tenant_id = tenant_id if tenant_id is not None else user_id
+        if tenant_id is None:
+            raise ValueError("Tenant ID là bắt buộc để tạo credential.")
+
         content = await file.read()
-
         safe_filename = f"{uuid.uuid4().hex[:8]}_{file.filename}"
-
         original_hash = hashlib.sha256(content).hexdigest()
 
         saved_path = await save_file(
