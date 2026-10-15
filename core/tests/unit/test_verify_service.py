@@ -1,8 +1,9 @@
-from types import SimpleNamespace
 import builtins
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+
 from app.services.verify_service import VerifyService
 
 pytestmark = pytest.mark.asyncio

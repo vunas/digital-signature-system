@@ -717,7 +717,7 @@ requires-dist = [
     { name = "aiosqlite", specifier = ">=0.22.1" },
     { name = "asn1crypto" },
     { name = "asyncpg" },
-    { name = "bcrypt", specifier = "==5.0.0" },
+    { name = "bcrypt", specifier = ">=5.0.0" },
     { name = "cryptography", specifier = ">=50.0.2" },
     { name = "fastapi", specifier = ">=0.143.0" },
     { name = "greenlet", specifier = ">=3.5.6" },

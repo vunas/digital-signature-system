@@ -5,9 +5,7 @@ from app.models.audit_log import AuditLog
 
 
 class AuditLogRepository:
-    async def get_by_user(
-        self, db: AsyncSession, user_id: int, limit: int = 50
-    ) -> list[AuditLog]:
+    async def get_by_user(self, db: AsyncSession, user_id: int, limit: int = 50) -> list[AuditLog]:
         result = await db.execute(
             select(AuditLog)
             .filter(AuditLog.user_id == user_id)

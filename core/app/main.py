@@ -1,23 +1,23 @@
+import os
+
+import uvicorn
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-import os
 
 from app.core.config import settings
-
 from app.core.middleware import LoggingMiddleware
 from app.routers import (
-    key_router,
-    certificate_router,
-    verify_router,
     auth_router,
-    document_router,
+    certificate_router,
     dashboard_router,
-    signature_router,
+    document_router,
+    key_router,
     log_router,
+    signature_router,
+    verify_router,
 )
 
 # 2. KHỞI TẠO FASTAPI APP
@@ -40,7 +40,7 @@ app.add_middleware(
 
 @app.get("/api/health-check", tags=["System"], include_in_schema=True)
 async def health_check():
-    from datetime import datetime, UTC
+    from datetime import UTC, datetime
 
     return {
         "status": "healthy",

@@ -1,12 +1,13 @@
-import uuid
 import hashlib
+import uuid
+
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.utils.file_utils import save_file
-from app.repositories.document_repo import document_repo
 from app.models.enums import TargetResourceType
+from app.repositories.document_repo import document_repo
 from app.services.log_service import log_service
+from app.utils.file_utils import save_file
 
 
 class FileService:

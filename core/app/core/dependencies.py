@@ -1,12 +1,12 @@
 from typing import Annotated, AsyncGenerator
 
-from fastapi import Cookie, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 import jwt
+from fastapi import Cookie, Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.session import AsyncSessionLocal
 from app.core.config import settings
+from app.db.session import AsyncSessionLocal
 from app.models.user import User
 
 

@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 import base64
 
-from app.core.dependencies import get_db, get_current_user
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.dependencies import get_current_user, get_db
 from app.models.user import User
-from app.repositories.key_repo import key_repo
 from app.repositories.document_repo import document_repo
+from app.repositories.key_repo import key_repo
 from app.repositories.signature_repo import signature_repo
 
 router = APIRouter(prefix="/dashboard-api", tags=["Dashboard"])

@@ -25,8 +25,7 @@ async def seed_logs(db: AsyncSession, docs: list):
                 signature_id=random.choice(signatures).id,
                 is_valid=True,
                 message="Chữ ký hợp lệ",
-                created_at=datetime.now(UTC)
-                - timedelta(hours=random.randint(1, 48)),
+                created_at=datetime.now(UTC) - timedelta(hours=random.randint(1, 48)),
             )
         )
 

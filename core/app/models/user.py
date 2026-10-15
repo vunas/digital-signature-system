@@ -1,15 +1,16 @@
 from datetime import datetime
-from typing import List, TYPE_CHECKING
-from sqlalchemy import String, Boolean, DateTime
-from sqlalchemy.sql import func
+from typing import TYPE_CHECKING, List
+
+from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql import func
 
 from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.models.key import Key
-    from app.models.document import Document
     from app.models.certificate import Certificate
+    from app.models.document import Document
+    from app.models.key import Key
 
 
 class User(Base):

@@ -1,4 +1,4 @@
-from app.core.encryption import encrypt_private_key, decrypt_private_key
+from app.core.encryption import decrypt_private_key, encrypt_private_key
 
 
 class AESService:

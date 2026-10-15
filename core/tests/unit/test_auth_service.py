@@ -2,6 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+
 from app.services.auth_service import AuthService
 
 pytestmark = pytest.mark.asyncio

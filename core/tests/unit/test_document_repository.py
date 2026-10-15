@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
+
 from app.repositories.document_repo import DocumentRepository
 
 pytestmark = pytest.mark.asyncio

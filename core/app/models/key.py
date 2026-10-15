@@ -1,16 +1,17 @@
 from datetime import datetime
-from typing import List, Optional, TYPE_CHECKING
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, Enum, Text
+from typing import TYPE_CHECKING, List, Optional
+
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import BYTEA
-from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql import func
 
 from app.db.base import Base
 from app.models.enums import KeyStorageType, SignatureAlgo
 
 if TYPE_CHECKING:
-    from app.models.user import User
     from app.models.certificate import Certificate
+    from app.models.user import User
 
 
 class Key(Base):

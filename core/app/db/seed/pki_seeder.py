@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.certificate import CertificateChain, CertType
-from app.services.certificate_service import certificate_service
 from app.schemas.certificate_schema import CertificateCreate
 from app.schemas.key_schema import KeyCreate
+from app.services.certificate_service import certificate_service
 from app.services.key_service import key_service
 
 

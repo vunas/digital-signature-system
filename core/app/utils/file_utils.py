@@ -1,10 +1,12 @@
+import logging
 import os
-import aiofiles
 from datetime import datetime
 from pathlib import Path
-from supabase import create_client, Client
+
+import aiofiles
+from supabase import Client, create_client
+
 from app.core.config import settings
-import logging
 
 BUCKET_NAME = "documents"
 USE_SUPABASE = False

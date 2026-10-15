@@ -1,18 +1,19 @@
-import os
 import asyncio
+import os
 import uuid
+
 import aiofiles
+from asn1crypto import x509
 from fastapi import UploadFile
 from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko.sign import validation
 from pyhanko_certvalidator import ValidationContext
 from pyhanko_certvalidator.errors import PathBuildingError
-from asn1crypto import x509
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.certificate import Certificate
-from app.models.enums import CertType, TargetResourceType, ActionStatus
+from app.models.enums import ActionStatus, CertType, TargetResourceType
 from app.services.log_service import log_service
 from app.services.verify_log_service import verify_log_service
 

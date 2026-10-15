@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from fastapi.responses import StreamingResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 import io
 
-from app.core.dependencies import get_db, get_current_user
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.dependencies import get_current_user, get_db
 from app.models.user import User
+from app.repositories.document_repo import document_repo
 from app.schemas.document_schema import DocumentResponse
 from app.services.file_service import file_service
-from app.repositories.document_repo import document_repo
 from app.utils.file_utils import get_file_content
 
 router = APIRouter(prefix="/api/documents", tags=["Documents"])

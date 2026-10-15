@@ -1,7 +1,9 @@
-from pydantic import BaseModel, ConfigDict
 from datetime import datetime
-from typing import Optional, Dict, Any
-from app.models.enums import LogLevel, ActionStatus, TargetResourceType
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel, ConfigDict
+
+from app.models.enums import ActionStatus, LogLevel, TargetResourceType
 
 
 class AuditLogResponse(BaseModel):

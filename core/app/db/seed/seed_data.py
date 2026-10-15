@@ -4,6 +4,11 @@ import asyncio
 from sqlalchemy import delete, select
 
 from app.db.base import Base
+from app.db.seed.document_seeder import seed_documents
+from app.db.seed.log_seeder import seed_logs
+from app.db.seed.pki_seeder import seed_pki
+from app.db.seed.signature_seeder import seed_signatures
+from app.db.seed.user_seeder import seed_users
 from app.db.session import AsyncSessionLocal, engine
 from app.models.audit_log import AuditLog
 from app.models.certificate import Certificate, CertificateChain
@@ -13,11 +18,6 @@ from app.models.signature import Signature
 from app.models.timestamp import Timestamp
 from app.models.user import User
 from app.models.verify_log import VerifyLog
-from app.db.seed.document_seeder import seed_documents
-from app.db.seed.log_seeder import seed_logs
-from app.db.seed.pki_seeder import seed_pki
-from app.db.seed.signature_seeder import seed_signatures
-from app.db.seed.user_seeder import seed_users
 
 
 async def run_seed(force=False):

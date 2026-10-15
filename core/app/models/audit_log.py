@@ -1,12 +1,13 @@
 from datetime import datetime
-from typing import Optional, Dict, Any
-from sqlalchemy import String, DateTime, ForeignKey, Text, Enum
+from typing import Any, Dict, Optional
+
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import func
 
 from app.db.base import Base
-from app.models.enums import LogLevel, ActionStatus, TargetResourceType
+from app.models.enums import ActionStatus, LogLevel, TargetResourceType
 
 
 class AuditLog(Base):

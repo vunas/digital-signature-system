@@ -1,5 +1,6 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.document import Document, DocumentStatus
 
 
@@ -27,8 +28,8 @@ class DocumentRepository:
         db: AsyncSession,
         db_obj: Document,
         status: DocumentStatus,
-        signed_path: str = None,
-        signed_hash: str = None,
+        signed_path: str | None = None,
+        signed_hash: str | None = None,
     ):
         db_obj.status = status
         if signed_path:

@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import event
@@ -19,7 +20,6 @@ from sqlalchemy.ext.asyncio import (
 
 from app.core.dependencies import get_current_user, get_db
 from app.db.base import Base
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -76,7 +76,7 @@ def override_get_db(db_session: AsyncSession):
 
 @pytest.fixture()
 def fastapi_app_full(override_get_db) -> FastAPI:
-    from app.routers import auth_router, signature_router, verify_router, key_router
+    from app.routers import auth_router, key_router, signature_router, verify_router
 
     app = FastAPI()
     app.include_router(auth_router.router)

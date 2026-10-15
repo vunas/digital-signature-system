@@ -1,36 +1,33 @@
-import os
-import tempfile
-import logging
 import asyncio
 import hashlib
-import httpx
+import logging
+import os
+import tempfile
 from datetime import datetime
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
+import httpx
+from asn1crypto import keys, pem, x509
 from cryptography.hazmat.primitives import serialization
-from asn1crypto import pem, x509, keys
-
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
 from pyhanko.sign import signers
 from pyhanko.sign.fields import SigSeedSubFilter
 from pyhanko.sign.timestamps import HTTPTimeStamper
 from pyhanko_certvalidator.registry import SimpleCertificateStore
-
-from app.schemas.signature_schema import SignatureCreate
-from app.repositories.document_repo import document_repo
-from app.repositories.key_repo import key_repo
-from app.repositories.certificate_repo import certificate_repo
-from app.repositories.signature_repo import signature_repo
-from app.services.crypto.aes_service import aes_service
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Centralized Enums
 from app.models.enums import TargetResourceType
+from app.repositories.certificate_repo import certificate_repo
+from app.repositories.document_repo import document_repo
+from app.repositories.key_repo import key_repo
+from app.repositories.signature_repo import signature_repo
+from app.schemas.signature_schema import SignatureCreate
+from app.services.crypto.aes_service import aes_service
 from app.services.log_service import log_service
-
 from app.utils.file_utils import (
-    get_signed_file_path,
     get_file_content,
+    get_signed_file_path,
     save_signed_file_content,
 )
 

@@ -1,8 +1,9 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-import pytest
 import httpx
+import pytest
+
 from app.services.sign_service import SignService
 
 pytestmark = pytest.mark.asyncio

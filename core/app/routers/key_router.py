@@ -1,10 +1,11 @@
-from fastapi import APIRouter
 from typing import List
 
+from fastapi import APIRouter
+
 from app.core.dependencies import CurrentUserDep, DatabaseDep
+from app.repositories.key_repo import key_repo
 from app.schemas.key_schema import KeyCreate, KeyResponse
 from app.services.key_service import key_service
-from app.repositories.key_repo import key_repo
 
 router = APIRouter(prefix="/api/keys", tags=["Keys"])
 

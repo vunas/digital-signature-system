@@ -1,5 +1,6 @@
-from fastapi import APIRouter
 from typing import List
+
+from fastapi import APIRouter
 
 from app.core.dependencies import CurrentUserDep, DatabaseDep
 from app.repositories.audit_log_repo import audit_log_repo

@@ -33,9 +33,7 @@ async def seed_documents(db: AsyncSession, users: dict):
     created_docs = []
 
     for doc_data in docs_info:
-        file_hash = hashlib.sha256(
-            minimal_pdf + doc_data["name"].encode()
-        ).hexdigest()
+        file_hash = hashlib.sha256(minimal_pdf + doc_data["name"].encode()).hexdigest()
         file_path = os.path.join(upload_dir, doc_data["name"])
 
         with open(file_path, "wb") as file:
@@ -45,15 +43,11 @@ async def seed_documents(db: AsyncSession, users: dict):
             user_id=doc_data["user_id"],
             file_name=doc_data["name"],
             original_file_path=file_path,
-            signed_file_path=(
-                file_path if doc_data["status"] != "UPLOADED" else None
-            ),
+            signed_file_path=(file_path if doc_data["status"] != "UPLOADED" else None),
             file_size=len(minimal_pdf),
             mime_type="application/pdf",
             file_hash=file_hash,
-            signed_file_hash=(
-                file_hash if doc_data["status"] != "UPLOADED" else None
-            ),
+            signed_file_hash=(file_hash if doc_data["status"] != "UPLOADED" else None),
             status=doc_data["status"],
         )
         db.add(new_doc)

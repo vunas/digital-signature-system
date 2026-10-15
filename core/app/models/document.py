@@ -1,15 +1,16 @@
 from datetime import datetime
-from typing import List, Optional, TYPE_CHECKING
-from sqlalchemy import String, Integer, DateTime, ForeignKey, Enum, Text
-from sqlalchemy.sql import func
+from typing import TYPE_CHECKING, List, Optional
+
+from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql import func
 
 from app.db.base import Base
 from app.models.enums import DocumentStatus
 
 if TYPE_CHECKING:
-    from app.models.user import User
     from app.models.signature import Signature
+    from app.models.user import User
 
 
 class Document(Base):

@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 from sqlalchemy import Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import func
 
 from app.db.base import Base
 

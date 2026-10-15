@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
-from app.models.key import SignatureAlgo, KeyStorageType
+from typing import Optional
+
+from pydantic import BaseModel
+
+from app.models.key import KeyStorageType, SignatureAlgo
 
 
 class KeyCreate(BaseModel):
