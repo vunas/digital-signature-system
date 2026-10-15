@@ -10,11 +10,12 @@ async def test_sign_endpoint_returns_signature_response_shape(
     client_full, fastapi_app_full, override_current_user_full, monkeypatch
 ):
     # Validates: /api/signatures/sign-pdf uses dependency overrides and returns response.
-    async def fake_sign_pdf(db, user_id: int, sign_data):
+    async def fake_sign_pdf(db, tenant_id: int, user_id: int, sign_data):
+        assert tenant_id == override_current_user_full.tenant_id
         assert user_id == override_current_user_full.id
         return SimpleNamespace(
             id=1,
-            document_id=sign_data.document_id,
+            credential_id=sign_data.credential_id,
             user_id=user_id,
             hash_algorithm="SHA-256",
             signature_algorithm="RSA",
@@ -27,7 +28,7 @@ async def test_sign_endpoint_returns_signature_response_shape(
     monkeypatch.setattr("app.routers.signature_router.sign_service.sign_pdf", fake_sign_pdf)
 
     payload = {
-        "document_id": 1,
+        "credential_id": 1,
         "key_id": 2,
         "signer_name": "Test Signer",
         "signer_reason": "Reason",
@@ -41,6 +42,6 @@ async def test_sign_endpoint_returns_signature_response_shape(
     assert res.status_code == 200, res.text
     body = res.json()
 
-    assert body["document_id"] == 1
+    assert body["credential_id"] == 1
     assert body["user_id"] == override_current_user_full.id
     assert body["signature_algorithm"] == "RSA"

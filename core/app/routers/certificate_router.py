@@ -24,7 +24,7 @@ async def create_certificate(
             raise ValueError("Hệ thống chưa thiết lập Intermediate CA. Vui lòng chạy Seed Data.")
 
         cert = await certificate_service.create_signed_cert(
-            db, current_user.id, cert_data, issuer_cert=issuer_cert
+            db, current_user.tenant_id, cert_data, issuer_cert=issuer_cert
         )
         return cert
     except ValueError as e:

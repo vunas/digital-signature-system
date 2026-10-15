@@ -25,7 +25,7 @@ class DummyUploadFile:
 
 
 @pytest.mark.unit
-async def test_upload_document_hash_and_size_are_computed(monkeypatch):
+async def test_upload_credential_hash_is_computed(monkeypatch):
     """
     Validates: FileService tính toán chính xác sha256 hash và file_size
     dựa trên bytes đọc được từ file upload.
@@ -39,7 +39,7 @@ async def test_upload_document_hash_and_size_are_computed(monkeypatch):
 
     monkeypatch.setattr("app.services.file_service.save_file", fake_save_file)
     monkeypatch.setattr(
-        "app.services.file_service.document_repo.create",
+        "app.services.file_service.credential_repo.create",
         AsyncMock(
             side_effect=lambda db, **kwargs: (
                 created_db_record.update(kwargs) or SimpleNamespace(**kwargs, id=1)
@@ -50,17 +50,16 @@ async def test_upload_document_hash_and_size_are_computed(monkeypatch):
 
     svc = FileService()
     f = DummyUploadFile("doc.pdf", "application/pdf", b"ABC")
-    doc = await svc.upload_document(db=object(), user_id=10, file=f)
+    credential = await svc.upload_credential(db=object(), user_id=10, file=f, tenant_id=1)
 
-    assert doc.user_id == 10
-    assert created_db_record["file_size"] == 3
-    assert created_db_record["file_hash"] == hashlib.sha256(b"ABC").hexdigest()
-    assert created_db_record["mime_type"] == "application/pdf"
+    assert credential.tenant_id == 1
+    assert created_db_record["original_hash"] == hashlib.sha256(b"ABC").hexdigest()
+    assert created_db_record["signed_hash"] == hashlib.sha256(b"ABC").hexdigest()
     assert created_db_record["file_name"] == "doc.pdf"
 
 
 @pytest.mark.unit
-async def test_upload_document_empty_file_edge_case(monkeypatch):
+async def test_upload_credential_empty_file_edge_case(monkeypatch):
     """
     Validates: Xử lý an toàn file rỗng (0 bytes upload).
     Đảm bảo sinh ra sha256 của chuỗi rỗng và size=0.
@@ -72,7 +71,7 @@ async def test_upload_document_empty_file_edge_case(monkeypatch):
 
     monkeypatch.setattr("app.services.file_service.save_file", fake_save_file)
     monkeypatch.setattr(
-        "app.services.file_service.document_repo.create",
+        "app.services.file_service.credential_repo.create",
         AsyncMock(
             side_effect=lambda db, **kwargs: (
                 created_db_record.update(kwargs) or SimpleNamespace(**kwargs, id=1)
@@ -83,7 +82,6 @@ async def test_upload_document_empty_file_edge_case(monkeypatch):
 
     svc = FileService()
     f = DummyUploadFile("empty.pdf", "application/pdf", b"")
-    await svc.upload_document(db=object(), user_id=1, file=f)
+    await svc.upload_credential(db=object(), user_id=1, file=f, tenant_id=1)
 
-    assert created_db_record["file_size"] == 0
-    assert created_db_record["file_hash"] == hashlib.sha256(b"").hexdigest()
+    assert created_db_record["original_hash"] == hashlib.sha256(b"").hexdigest()

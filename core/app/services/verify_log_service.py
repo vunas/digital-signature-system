@@ -7,7 +7,7 @@ class VerifyLogService:
     async def create_verify_log(
         self,
         db: AsyncSession,
-        document_id: int | None,
+        tracking_id: str | None,
         signature_id: int | None,
         verified_by_user_id: int | None,
         is_valid: bool,
@@ -19,7 +19,7 @@ class VerifyLogService:
     ) -> VerifyLog:
 
         verify_log = VerifyLog(
-            document_id=document_id,
+            tracking_id=tracking_id,
             signature_id=signature_id,
             verified_by_user_id=verified_by_user_id,
             is_valid=is_valid,
