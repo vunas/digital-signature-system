@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Digital Signature PDF API"
-    VERSION: str = "1.0.0"
+    VERSION: str = "0.1.0"
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/digital_signature_db"
 

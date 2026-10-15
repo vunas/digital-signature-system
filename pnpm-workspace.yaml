@@ -1,7 +1,4 @@
 packages:
-  - "apps/*"
-  - "libs/*"
-
+  - "web"
 allowBuilds:
-  nx: false
   unrs-resolver: false
