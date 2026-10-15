@@ -19,4 +19,4 @@ class VerifyResponse(BaseModel):
 
     message: str
     signer_info: Optional[SignerInfoSchema] = None
-    document_hash: Optional[str] = None
+    credential_hash: Optional[str] = None

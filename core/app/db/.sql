@@ -185,6 +185,8 @@ CREATE TABLE certificate_chains (
     created_at          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE INDEX idx_cert_chains_cert_id ON certificate_chains(certificate_id);
+
 
 -- =============================================================================
 -- NHÓM 4: QUẢN LÝ VĂN BẰNG & CHỨNG CHỈ SỐ (VERIFIABLE CREDENTIALS)
@@ -216,7 +218,7 @@ CREATE TABLE credentials (
     -- Trạng thái vòng đời & Thu hồi văn bằng (Revocation - UC-06)
     status             credential_status DEFAULT 'ISSUED',
     revocation_reason  TEXT,
-    revoked_at         TIMESTA0000000000000000000000MPTZ,
+    revoked_at         TIMESTAMPTZ,
     revoked_by_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     
     created_at         TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -271,6 +273,8 @@ CREATE TABLE timestamps (
     tsa_name        VARCHAR(100),-- Đơn vị cấp mộc thời gian
     created_at      TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_timestamps_signature_id ON timestamps(signature_id);
 
 
 -- =============================================================================

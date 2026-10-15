@@ -13,11 +13,12 @@ async def seed_signatures(
     print("✍️ Đang tạo Signatures...")
 
     giamdoc = users["giamdoc"]
-    signed_docs = [doc for doc in docs if doc.status in ["SIGNED", "VERIFIED"]]
-
-    for doc in signed_docs:
+    signed_credentials = [
+        credential for credential in docs if credential.status in ["SIGNED", "VERIFIED"]
+    ]
+    for credential in signed_credentials:
         signature = Signature(
-            document_id=doc.id,
+            credential_id=credential.id,
             key_id=pki_data["user_key"].id,
             certificate_id=pki_data["user_cert"].id,
             user_id=giamdoc.id,

@@ -6,16 +6,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import get_current_user, get_db
 from app.models.user import User
-from app.repositories.document_repo import document_repo
-from app.schemas.document_schema import DocumentResponse
+from app.repositories.credential_repo import credential_repo
+from app.schemas.credential_schema import CredentialResponse
 from app.services.file_service import file_service
 from app.utils.file_utils import get_file_content
 
-router = APIRouter(prefix="/api/documents", tags=["Documents"])
+# Keep the established public URL while using credential terminology internally.
+router = APIRouter(prefix="/api/documents", tags=["Credentials"])
 
 
-@router.post("/upload", response_model=DocumentResponse)
-async def upload_document(
+@router.post("/upload", response_model=CredentialResponse)
+async def upload_credential(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -25,38 +26,40 @@ async def upload_document(
         raise HTTPException(status_code=400, detail="Hệ thống chỉ chấp nhận định dạng PDF.")
 
     try:
-        doc = await file_service.upload_document(db, current_user.id, file)
-        return doc
+        credential = await file_service.upload_credential(
+            db, current_user.id, file, tenant_id=current_user.tenant_id
+        )
+        return credential
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi upload: {str(e)}")
 
 
-@router.get("/", response_model=list[DocumentResponse])
-async def get_my_documents(
+@router.get("/", response_model=list[CredentialResponse])
+async def get_my_credentials(
     db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """Lấy danh sách các tài liệu của user"""
-    return await document_repo.get_all_by_user(db, current_user.id)
+    return await credential_repo.get_all_by_tenant(db, current_user.tenant_id)
 
 
-@router.get("/{doc_id}/download")
-async def download_document(
-    doc_id: int,
+@router.get("/{credential_id}/download")
+async def download_credential(
+    credential_id: int,
     is_signed: bool = False,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """Tải file PDF (local hoặc Supabase – tự động xử lý)"""
-    doc = await document_repo.get_by_id(db, doc_id, current_user.id)
-    if not doc:
-        raise HTTPException(status_code=404, detail="Không tìm thấy tài liệu.")
+    credential = await credential_repo.get_by_id(db, credential_id, current_user.tenant_id)
+    if not credential:
+        raise HTTPException(status_code=404, detail="Không tìm thấy credential.")
 
-    file_path = doc.signed_file_path if is_signed else doc.original_file_path
+    file_path = credential.file_download_url
 
     if not file_path:
         raise HTTPException(
             status_code=400,
-            detail=("Tài liệu này chưa được ký." if is_signed else "Không tìm thấy file gốc."),
+            detail=("Credential này chưa được ký." if is_signed else "Không tìm thấy file gốc."),
         )
 
     try:
@@ -64,7 +67,7 @@ async def download_document(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi tải file từ Storage: {str(e)}")
 
-    filename = doc.file_name
+    filename = credential.file_name or "credential.pdf"
     if is_signed and not filename.endswith("_signed.pdf"):
         filename = filename.replace(".pdf", "_signed.pdf")
 

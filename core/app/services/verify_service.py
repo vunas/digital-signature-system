@@ -61,14 +61,14 @@ class VerifyService:
                 db=db,
                 user_id=user_id,
                 action="VERIFY_DOCUMENT",
-                target_type=TargetResourceType.DOCUMENT,
+                target_type=TargetResourceType.CREDENTIAL,
                 target_id=os.path.basename(file_path),
                 status=ActionStatus.FAILED,
                 payload={"reason": "File rỗng"},
             )
             await verify_log_service.create_verify_log(
                 db=db,
-                document_id=None,
+                tracking_id=None,
                 signature_id=None,
                 verified_by_user_id=user_id,
                 is_valid=False,
@@ -110,7 +110,7 @@ class VerifyService:
                 msg = "Hệ thống chưa có Root CA để đối chiếu. Vui lòng chạy Seed Data."
                 await verify_log_service.create_verify_log(
                     db=db,
-                    document_id=None,
+                    tracking_id=None,
                     signature_id=None,
                     verified_by_user_id=user_id,
                     is_valid=False,
@@ -134,7 +134,7 @@ class VerifyService:
                 db=db,
                 user_id=user_id,
                 action="VERIFY_DOCUMENT",
-                target_type=TargetResourceType.DOCUMENT,
+                target_type=TargetResourceType.CREDENTIAL,
                 target_id=os.path.basename(file_path),
                 status=ActionStatus.SUCCESS if result.get("is_valid") else ActionStatus.FAILED,
                 payload={"message": result.get("message")},
@@ -143,7 +143,7 @@ class VerifyService:
             # Ghi log Verify chi tiết về trạng thái chữ ký (lưu cục JSON sạch)
             await verify_log_service.create_verify_log(
                 db=db,
-                document_id=None,
+                tracking_id=None,
                 signature_id=None,
                 verified_by_user_id=user_id,
                 is_valid=result.get("is_valid", False),
@@ -161,14 +161,14 @@ class VerifyService:
                 db=db,
                 user_id=user_id,
                 action="VERIFY_DOCUMENT",
-                target_type=TargetResourceType.DOCUMENT,
+                target_type=TargetResourceType.CREDENTIAL,
                 target_id=os.path.basename(file_path),
                 status=ActionStatus.FAILED,
                 payload={"reason": "PathBuildingError"},
             )
             await verify_log_service.create_verify_log(
                 db=db,
-                document_id=None,
+                tracking_id=None,
                 signature_id=None,
                 verified_by_user_id=user_id,
                 is_valid=False,
@@ -189,14 +189,14 @@ class VerifyService:
                 db=db,
                 user_id=user_id,
                 action="VERIFY_DOCUMENT",
-                target_type=TargetResourceType.DOCUMENT,
+                target_type=TargetResourceType.CREDENTIAL,
                 target_id=os.path.basename(file_path),
                 status=ActionStatus.FAILED,
                 payload={"reason": str(e)},
             )
             await verify_log_service.create_verify_log(
                 db=db,
-                document_id=None,
+                tracking_id=None,
                 signature_id=None,
                 verified_by_user_id=user_id,
                 is_valid=False,
@@ -212,8 +212,8 @@ class VerifyService:
             }
 
     def _sync_verify_pdf(self, file_path: str, vc: ValidationContext):
-        with open(file_path, "rb") as doc_file:
-            reader = PdfFileReader(doc_file, strict=False)
+        with open(file_path, "rb") as credential_file:
+            reader = PdfFileReader(credential_file, strict=False)
 
             embedded_signatures = reader.embedded_signatures
             if not embedded_signatures:

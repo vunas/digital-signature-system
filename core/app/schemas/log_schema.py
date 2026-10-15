@@ -25,7 +25,7 @@ class AuditLogResponse(BaseModel):
 
 class VerifyLogResponse(BaseModel):
     id: int
-    document_id: Optional[int]
+    tracking_id: Optional[str]
     signature_id: Optional[int]
     verified_by_user_id: Optional[int]
     is_valid: bool

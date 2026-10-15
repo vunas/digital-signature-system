@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # Centralized Enums
 from app.models.enums import TargetResourceType
 from app.repositories.certificate_repo import certificate_repo
-from app.repositories.document_repo import document_repo
+from app.repositories.credential_repo import credential_repo
 from app.repositories.key_repo import key_repo
 from app.repositories.signature_repo import signature_repo
 from app.schemas.signature_schema import SignatureCreate
@@ -33,13 +33,30 @@ from app.utils.file_utils import (
 
 
 class SignService:
-    async def sign_pdf(self, db: AsyncSession, user_id: int, sign_data: SignatureCreate):
+    async def sign_pdf(
+        self,
+        db: AsyncSession,
+        tenant_id: int | None = None,
+        user_id: int | SignatureCreate | None = None,
+        sign_data: SignatureCreate | None = None,
+    ):
+        if sign_data is None:
+            sign_data = user_id
+            user_id = None
         """Thực hiện nhúng chữ ký số chuẩn PAdES vào tệp PDF (Bất đồng bộ)."""
 
-        doc, key_record, cert_record = await self._get_and_validate_records(db, user_id, sign_data)
+        credential, key_record, cert_record = await self._get_and_validate_records(
+            db, tenant_id, sign_data
+        )
 
-        input_db_path = doc.signed_file_path or doc.original_file_path
-        output_db_path = get_signed_file_path(doc.file_name, input_db_path)
+        input_db_path = getattr(credential, "file_download_url", None)
+        if input_db_path is None:
+            input_db_path = getattr(credential, "signed_file_path", None) or getattr(
+                credential, "original_file_path", None
+            )
+        output_db_path = get_signed_file_path(
+            credential.file_name or "credential.pdf", input_db_path
+        )
 
         private_key = self._load_private_key(key_record, sign_data)
         end_entity_cert = self._load_certificate(cert_record)
@@ -59,11 +76,11 @@ class SignService:
             sign_data=sign_data,
         )
 
-        doc.mark_as_signed(new_signed_path=output_db_path, new_signed_hash=new_signed_hash)
+        credential.mark_as_signed(new_signed_path=output_db_path, new_signed_hash=new_signed_hash)
 
         signature_record = await signature_repo.create(
             db=db,
-            document_id=doc.id,
+            credential_id=credential.id,
             key_id=key_record.id,
             certificate_id=cert_record.id,
             user_id=user_id,
@@ -79,29 +96,36 @@ class SignService:
             action="SIGN_DOCUMENT",
             target_type=TargetResourceType.SIGNATURE,
             target_id=str(signature_record.id),
-            payload={"document_id": doc.id, "signer_name": sign_data.signer_name},
+            payload={"credential_id": credential.id, "signer_name": sign_data.signer_name},
         )
 
         return signature_record
 
     async def _get_and_validate_records(
-        self, db: AsyncSession, user_id: int, sign_data: SignatureCreate
+        self,
+        db: AsyncSession,
+        tenant_id: int | None = None,
+        sign_data: SignatureCreate | None = None,
+        user_id: int | None = None,
     ):
-        doc = await document_repo.get_by_id(db, sign_data.document_id, user_id)
-        key_record = await key_repo.get_by_id(db, sign_data.key_id, user_id)
+        tenant_id = tenant_id if tenant_id is not None else user_id
+        credential = await credential_repo.get_by_id(db, sign_data.credential_id, tenant_id)
+        key_record = await key_repo.get_by_id(db, sign_data.key_id, tenant_id)
 
         cert_record = None
         if key_record:
-            cert_record = await certificate_repo.get_by_key_id(db, key_record.id)
+            cert_record = await certificate_repo.get_by_key_id(db, key_record.id, tenant_id)
 
-        if not doc or not key_record or not cert_record:
-            raise ValueError("Không tìm thấy tài liệu, khóa hoặc chứng thư số tương ứng.")
+        if not credential or not key_record or not cert_record:
+            raise ValueError(
+                "Không tìm thấy tài liệu/credential, khóa hoặc chứng thư số tương ứng."
+            )
 
         # Check tính hợp lệ của cert
         if not cert_record.is_valid_now():
             raise ValueError("Chứng chỉ không hợp lệ hoặc đã hết hạn.")
 
-        return doc, key_record, cert_record
+        return credential, key_record, cert_record
 
     def _load_private_key(self, key_record, sign_data: SignatureCreate):
         storage_type = getattr(key_record.storage_type, "value", key_record.storage_type)

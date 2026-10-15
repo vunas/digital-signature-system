@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/signatures", tags=["Signatures"])
 
 
 @router.post("/sign-pdf", response_model=SignatureResponse)
-async def sign_document(
+async def sign_credential(
     sign_data: SignatureCreate,
     db: DatabaseDep,
     current_user: CurrentUserDep,
@@ -17,10 +17,12 @@ async def sign_document(
     """Ký số lên tài liệu PDF bằng cách tương tác với hệ thống PKI nội bộ."""
     try:
         logger.info(
-            f"User {current_user.username} đang thực hiện ký tài liệu ID {sign_data.document_id}"
+            f"User {current_user.username} đang thực hiện ký credential ID {sign_data.credential_id}"
         )
 
-        signature_record = await sign_service.sign_pdf(db, current_user.id, sign_data)
+        signature_record = await sign_service.sign_pdf(
+            db, current_user.tenant_id, current_user.id, sign_data
+        )
 
         return signature_record
 

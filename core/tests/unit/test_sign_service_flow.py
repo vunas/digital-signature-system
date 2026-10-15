@@ -17,7 +17,7 @@ def sign_service():
 @pytest.fixture()
 def sign_input():
     return SimpleNamespace(
-        document_id=1,
+        credential_id=1,
         key_id=2,
         signer_name="Alice",
         signer_reason="Approval",
@@ -33,7 +33,7 @@ class TestSignServiceFlow:
     ):
         # Arrange
         monkeypatch.setattr(
-            "app.services.sign_service.document_repo.get_by_id",
+            "app.services.sign_service.credential_repo.get_by_id",
             AsyncMock(return_value=SimpleNamespace(id=1)),
         )
         monkeypatch.setattr(
@@ -159,21 +159,21 @@ class TestSignServiceFlow:
         self, sign_service, sign_input, monkeypatch
     ):
         # Arrange
-        doc = SimpleNamespace(
-            id=1, file_name="a.pdf", original_file_path="local:/a.pdf", signed_file_path=None
+        credential = SimpleNamespace(
+            id=1, file_name="a.pdf", file_download_url="local:/a.pdf", signed_hash=None
         )
-        doc.mark_as_signed = lambda new_signed_path, new_signed_hash: (
-            setattr(doc, "signed_file_path", new_signed_path),
-            setattr(doc, "signed_file_hash", new_signed_hash),
+        credential.mark_as_signed = lambda new_signed_path, new_signed_hash: (
+            setattr(credential, "file_download_url", new_signed_path),
+            setattr(credential, "signed_hash", new_signed_hash),
         )
         key_record = SimpleNamespace(id=2)
         cert_record = SimpleNamespace(id=3)
-        signature_record = SimpleNamespace(id=10, document_id=1)
+        signature_record = SimpleNamespace(id=10, credential_id=1)
 
         monkeypatch.setattr(
             sign_service,
             "_get_and_validate_records",
-            AsyncMock(return_value=(doc, key_record, cert_record)),
+            AsyncMock(return_value=(credential, key_record, cert_record)),
         )
         monkeypatch.setattr(
             "app.services.sign_service.get_signed_file_path",
@@ -207,7 +207,7 @@ class TestSignServiceFlow:
         # Assert
         assert result == signature_record
         assert captured["create"] == 1
-        assert doc.signed_file_path == "local:/signed.pdf"
+        assert credential.file_download_url == "local:/signed.pdf"
 
     async def test_sign_pdf_exception_path_triggers_uow_rollback(
         self, sign_service, sign_input, mock_uow, monkeypatch
