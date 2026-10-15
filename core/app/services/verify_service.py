@@ -1,5 +1,8 @@
 import os
 import asyncio
+import uuid
+import aiofiles
+from fastapi import UploadFile
 from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko.sign import validation
 from pyhanko_certvalidator import ValidationContext
@@ -15,7 +18,33 @@ from app.services.verify_log_service import verify_log_service
 
 
 class VerifyService:
-    async def verify_pdf_signature(self, db: AsyncSession, file_path: str, user_id: int = None):
+    async def verify_pdf_signature(
+        self,
+        db: AsyncSession,
+        file: UploadFile | str | None = None,
+        user_id: int | None = None,
+        file_path: str | None = None,
+    ):
+        if isinstance(file, str) and file_path is None:
+            file_path = file
+            file = None
+
+        if file is None:
+            if file_path is None:
+                raise ValueError("Cần cung cấp file PDF để xác thực.")
+            return await self._verify_pdf_signature(db, file_path, user_id)
+
+        safe_filename = f"temp_verify_{uuid.uuid4().hex}.pdf"
+        try:
+            await file.seek(0)
+            async with aiofiles.open(safe_filename, "wb") as out_file:
+                await out_file.write(await file.read())
+            return await self._verify_pdf_signature(db, safe_filename, user_id)
+        finally:
+            if os.path.exists(safe_filename):
+                os.remove(safe_filename)
+
+    async def _verify_pdf_signature(self, db: AsyncSession, file_path: str, user_id: int = None):
         """
         Đọc tệp PDF và xác thực chữ ký nhúng bên trong (Bất đồng bộ).
         Ghi log vào cả AuditLog và VerifyLog.

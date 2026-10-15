@@ -50,7 +50,6 @@ async def health_check():
 
 
 # 4. CẤU HÌNH GIAO DIỆN (UI) VÀ TÀI NGUYÊN TĨNH
-# Tạo thư mục nếu chưa tồn tại để tránh lỗi crash
 os.makedirs("app/static/css", exist_ok=True)
 os.makedirs("app/static/js", exist_ok=True)
 os.makedirs("app/templates", exist_ok=True)
@@ -91,29 +90,29 @@ async def login_page(request: Request):
 @app.get("/dashboard", response_class=HTMLResponse, include_in_schema=False)
 async def dashboard_page(request: Request):
     """Trang Tổng Quan (Sau khi đăng nhập)"""
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(request, "dashboard.html")
 
 
 @app.get("/generate-key", response_class=HTMLResponse, include_in_schema=False)
 async def generate_key_page(request: Request):
     """Trang Khởi Tạo Khóa"""
-    return templates.TemplateResponse("generate_key.html", {"request": request})
+    return templates.TemplateResponse(request, "generate_key.html")
 
 
 @app.get("/sign", response_class=HTMLResponse, include_in_schema=False)
 async def sign_page(request: Request):
-    return templates.TemplateResponse("sign.html", {"request": request})
+    return templates.TemplateResponse(request, "sign.html")
 
 
 @app.get("/verify", response_class=HTMLResponse, include_in_schema=False)
 async def verify_page(request: Request):
     """Trang Xác Thực Chữ Ký"""
-    return templates.TemplateResponse("verify.html", {"request": request})
+    return templates.TemplateResponse(request, "verify.html")
 
 
 @app.get("/log", response_class=HTMLResponse, include_in_schema=False)
 async def log_page(request: Request):
-    return templates.TemplateResponse("log.html", {"request": request})
+    return templates.TemplateResponse(request, "log.html")
 
 
 # 7. KHỞI CHẠY SERVER BẰNG UVICORN
