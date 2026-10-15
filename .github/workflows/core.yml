@@ -4,12 +4,12 @@ on:
   push:
     branches: [main, master]
     paths:
-      - "apps/core/**"
+      - "core/**"
       - ".github/workflows/core.yml"
   pull_request:
     branches: [main, master]
     paths:
-      - "apps/core/**"
+      - "core/**"
       - ".github/workflows/core.yml"
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/core
+        working-directory: core
 
     steps:
       - uses: actions/checkout@v7
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/core
+        working-directory: core
 
     steps:
       - uses: actions/checkout@v7
@@ -85,7 +85,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: apps/core
+        working-directory: core
 
     steps:
       - uses: actions/checkout@v7
